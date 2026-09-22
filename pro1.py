@@ -1,10 +1,11 @@
 """Program 1: Student Marks Analyzer
 
-Accept marks for multiple subjects, validate the input, and display useful
-statistics and a grade for the student.
+Accept marks for a variable number of subjects, validate the input, and
+ display useful statistics and an overall pass/fail result.
 """
 
 MAX_MARKS = 100
+PASS_MARK = 40
 
 
 def read_positive_integer(prompt: str) -> int:
@@ -70,26 +71,47 @@ def display_report(marks: dict[str, float]) -> None:
     maximum_total = subject_count * MAX_MARKS
     percentage = (total / maximum_total) * 100
     average = total / subject_count
+    failed_subjects = [
+        subject for subject, mark in marks.items() if mark < PASS_MARK
+    ]
+    passed = not failed_subjects
 
     print("\n" + "=" * 40)
     print("STUDENT MARKS REPORT")
     print("=" * 40)
     for subject, mark in marks.items():
-        print(f"{subject}: {mark:g}/{MAX_MARKS}")
+        result = "Pass" if mark >= PASS_MARK else "Fail"
+        print(f"{subject}: {mark:g}/{MAX_MARKS} ({result})")
     print("-" * 40)
     print(f"Total marks : {total:g}/{maximum_total}")
     print(f"Percentage  : {percentage:.2f}%")
     print(f"Average     : {average:.2f}")
     print(f"Highest mark: {max(marks.values()):g}")
     print(f"Lowest mark : {min(marks.values()):g}")
-    print(f"Grade       : {calculate_grade(percentage)}")
+    print(f"Overall grade: {calculate_grade(percentage)}")
+
+    if passed:
+        print("Overall result: PASS - The student passed every subject.")
+    else:
+        failed_list = ", ".join(failed_subjects)
+        print("Overall result: FAIL")
+        print(
+            f"The student failed {len(failed_subjects)} subject(s): {failed_list}."
+        )
+        print(
+            f"A minimum of {PASS_MARK} marks is required in every subject, "
+            "even when the overall percentage is high."
+        )
     print("=" * 40)
 
 
 def main() -> None:
-    """Collect subject marks and generate the report."""
+    """Collect a variable number of subject marks and generate a report."""
     print("Student Marks Analyzer")
-    print("Grade rules: A = 90-100, B = 80-89, C = 70-79, D = 60-69, F < 60")
+    print(
+        f"Grade rules: A = 90-100, B = 80-89, C = 70-79, "
+        f"D = 60-69, F < 60 | Pass mark per subject: {PASS_MARK}"
+    )
 
     subject_count = read_positive_integer("How many subjects? ")
     marks: dict[str, float] = {}
